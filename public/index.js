@@ -28,13 +28,41 @@ const appendHedgehog = (hedgehog) => {
     </article>
   `);
 };
+let formDataVar;
 
-const addNewHedgehog = () => {
-  console.log("we are in the addNewHedgehog function");
+const addNewHedgehog = (e) => {
+  e.preventDefault();
+
+  body = {
+    "name": document.getElementById('name').value,
+    "hoglets": document.getElementById('hoglets').value,
+    "allergies": document.getElementById('allergies').value
+  }
+  fetch(`https://hedgehog-party.herokuapp.com/api/v1/invites`, {
+    method: 'POST',
+    headers: {
+          "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body)
+  }).then(response => response.json())
+  .then(data => {
+    const { name, hoglets, allergies } = body
+    appendHedgehog({
+      name,
+      hoglets,
+      allergies,
+      id: data.id
+    });
+  })
+  .catch(error => {
+    console.error(error);
+  });
 };
 
-const unInviteHedgehog = () => {
-  console.log("we are in the unInviteHedgehog function");
+const unInviteHedgehog = (e) => {
+  fetch(`https://hedgehog-party.herokuapp.com/api/v1/invites/${e.currentTarget.id}`, {
+    method: 'DELETE'
+  });
 };
 
 getHedgehogs();
